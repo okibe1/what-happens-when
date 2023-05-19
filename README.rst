@@ -406,13 +406,23 @@ to decide how to react. The algorithm for this is called `TCP congestion
 control`_. This varies depending on the sender; the most common algorithms are
 `cubic`_ on newer operating systems and `New Reno`_ on almost all others.
 
-* Client chooses a `congestion window`_ based on the `maximum segment size`_
-  (MSS) of the connection.
-* For each packet acknowledged, the window doubles in size until it reaches the
-  'slow-start threshold'. In some implementations, this threshold is adaptive.
-* After reaching the slow-start threshold, the window increases additively for
-  each packet acknowledged. If a packet is dropped, the window reduces
-  exponentially until another packet is acknowledged.
+If a packet is dropped during the TLS handshake process, the sender, which is typically the client, needs to react and handle the situation. This response is governed by the TCP congestion control algorithm, which determines how the sender adjusts its transmission behavior in the face of packet loss or network congestion.
+
+When a packet is dropped, the client initiates the congestion control mechanism by following these steps:
+
+The client selects a congestion window size based on the maximum segment size (MSS) of the connection. The MSS represents the maximum amount of data that can be transmitted in a single packet.
+
+As packets are acknowledged by the server, the client's congestion window size doubles in order to increase the amount of data sent. This phase is known as "slow-start," and it continues until the congestion window reaches a predefined threshold, often called the "slow-start threshold." In some implementations, this threshold can be adaptive, adjusting based on network conditions.
+
+Once the slow-start threshold is reached, the client switches to additive increase mode. In this mode, the congestion window increases by a fixed amount for every acknowledged packet. This gradual increase helps to avoid sudden congestion and provides a more stable transmission.
+
+However, if a packet is dropped during transmission, it indicates potential network congestion or issues. In response, the congestion control mechanism triggers a congestion avoidance phase. The client reduces the congestion window size exponentially, significantly decreasing the amount of data sent. This reduction aims to alleviate congestion and prevent further packet loss.
+
+The client continues to adjust the congestion window size based on the acknowledgments received. As acknowledged packets increase, the congestion window size grows additively again until the next packet loss occurs, initiating another round of exponential reduction.
+
+It's worth noting that the specific congestion control algorithm used may vary depending on the operating system and network configuration. The most common algorithms employed are cubic, which is found in newer operating systems, and New Reno, which is widely used in other implementations.
+
+By employing TCP congestion control, the client adapts its transmission behavior in response to dropped packets, effectively managing network congestion and ensuring reliable delivery of data over the TLS connection.
 
 HTTP protocol
 -------------
